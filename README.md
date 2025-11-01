@@ -1,2 +1,2 @@
-# Kannagi-Card
+# kannagi-Card
 巫カードゲームとNTAGのコンボ
