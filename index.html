@@ -21,18 +21,26 @@
   .card {
     width: min(86vw, 420px);
     aspect-ratio: 2.5 / 3.5;
-    border-radius: 25px;              /* ← カード角の丸みを追加 */
-    overflow: hidden;
+    border-radius: 25px;          /* ← 角丸強め */
+    overflow: hidden;             /* ← これが超重要！中身を丸く切り抜く */
     background: #000;
-    
-    /* 外周シャドウ＋奥行き感 */
+    position: relative;
+  
     box-shadow:
-      0 0 30px rgba(255,255,255,0.3),   /* ← 白く淡い外側シャドウ */
-      0 18px 40px rgba(0,0,0,0.5);       /* ← 下方向の落ち影で立体感 */
-      
+      0 0 40px rgba(255,255,255,0.25),
+      0 0 80px rgba(255,255,255,0.15),
+      0 18px 40px rgba(0,0,0,0.5);
+  
     transform: translateY(120vh);
     animation: slideUp 1.1s cubic-bezier(.2,.8,.2,1) forwards;
-    position: relative;
+  }
+  
+  /* videoをカードいっぱいにフィットさせる */
+  .card video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   /* 反射っぽいハイライト */
