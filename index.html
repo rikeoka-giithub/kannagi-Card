@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rikeoka Card Motion</title>
+  <style>
+    :root{
+      --drop-shadow: 0 22px 50px rgba(0,0,0,.55);
+      --rim: rgba(255,255,255,.35);
+      --anim-duration: 1200ms;   /* スライド全体の長さ（ゆっくりめ） */
+      --anim-delay: 120ms;       /* 開始ディレイ */
+    }
+
+    /* 背景は固定（パララックス感） */
+    body{
+      margin:0;
+      min-height:100svh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: url('images/Gold%20Glitter.jpg') center/cover no-repeat fixed;
+      font-family: system-ui, -apple-system, "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      overflow:hidden; /* はみ出しを隠す */
+    }
+
+    /* ステージ：中央にカードを載せる */
+    .stage{
+      position:relative;
+      width:min(92vw, 380px);    /* 最大幅 380px（カードの外枠） */
+      aspect-ratio: 63 / 88;     /* トレーディングカード比率 */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      /* ステージは透明。背景は body 側で固定表示 */
+    }
+
+    /* カード（動画を内包） */
+    .card{
+      position:relative;
+      width:100%;
+      height:100%;
+      border-radius:18px;
+      overflow:hidden;             /* 角丸に動画をクリップ */
+      box-shadow: var(--drop-shadow);
+      transform: translateY(120%); /* 画面下から開始 */
+      animation: riseBounce var(--anim-duration) cubic-bezier(.18,.9,.13,1) var(--anim-delay) both;
+      background: #000;            /* 読み込み前の下地 */
+      border: 1px solid rgba(255,255,255,.25);
+      outline: 1px solid rgba(0,0,0,.35);
+      outline-offset: -1px;
+    }
+
+    /* 動画本体：カードいっぱいに表示 */
+    .card video{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit: cover;          /* 画面いっぱいに見せる */
+      display:block;
+    }
+
+    /* ハイライト（光の筋がうっすら動く） */
+    .card::after{
+      content:"";
+      position:absolute; inset:-30%;
+      pointer-events:none;
+      background: linear-gradient(110deg, transparent 44%, rgba(255,255,255,.28) 50%, transparent 56%);
+      filter: blur(8px);
+      mix-blend-mode: screen;
+      animation: sweep 7s linear infinite;
+    }
+
+    /* エッジの金属リム感（ごく控えめ） */
+    .card::before{
+      content:"";
+      position:absolute; inset:0;
+      border-radius:18px;
+      box-shadow: inset 0 0 0 1px var(--rim);
+      pointer-events:none;
+    }
+
+    /* 読み込み失敗などのテキスト（任意） */
+    .label{
+      position:absolute; bottom:10px; left:0; right:0;
+      text-align:center;
+      color:#fff; font-size:12px; text-shadow:0 1px 2px rgba(0,0,0,.6);
+      opacity:.8;
+      user-select:none;
+      pointer-events:none;
+    }
+
+    /* 低モーション設定の端末ではアニメ控えめ */
+    @media (prefers-reduced-motion: reduce){
+      .card{ animation: none; transform:none; }
+      .card::after{ animation: none; }
+    }
+
+    /* カードが下→上へ豪快に出てきて、軽くおさまる“バウンズあり” */
+    @keyframes riseBounce{
+      0%   { transform: translateY(120%); }
+      60%  { transform: translateY(-10%); } /* 通り過ぎる */
+      80%  { transform: translateY(5%); }   /* 戻り */
+      92%  { transform: translateY(-2%); }  /* 微調整 */
+      100% { transform: translateY(0); }
+    }
+
+    /* ハイライトの流れ（演出） */
+    @keyframes sweep{
+      0%   { transform: translateX(-40%); opacity:.45; }
+      50%  { transform: translateX(10%);  opacity:.25; }
+      100% { transform: translateX(60%);  opacity:.45; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="card">
+      <video
+        src="kannnagi.MP4"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+      ></video>
+      <!-- <div class="label">kannnagi.MP4</div> -->
+    </div>
+  </div>
+
+  <script>
+    // iOSで稀に自動再生が止まる場合の保険（フォーカス時に再再生）
+    const v = document.querySelector('video');
+    const tryPlay = () => { v && v.play().catch(()=>{}); };
+    document.addEventListener('visibilitychange', tryPlay);
+    window.addEventListener('focus', tryPlay);
+  </script>
+</body>
+</html>
